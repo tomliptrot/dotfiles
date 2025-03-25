@@ -1,0 +1,47 @@
+format = """
+[┌───────────────────>](bold green)
+[│](bold green)\
+$python\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$cmd_duration
+[└─>](bold green)
+"""
+
+
+add_newline=false
+command_timeout=3000 #ms
+
+[aws]
+disabled = true
+
+[gcloud]
+disabled = true
+
+[directory]
+format = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 4
+truncate_to_repo = false
+truncation_symbol = "…/"
+
+[docker_context]
+disabled = true
+
+[package]
+disabled = true
+
+[direnv]
+disabled = false
+style = "bold orange"
+
+[python]
+format = '[${symbol}(${version} )(\($virtualenv\) )]($style)'
+python_binary = ["./venv/bin/python", "python3", "python", "python2"]
+symbol = "🐍 "
+style = "bold #f3e10b"
+
+[cmd_duration]
+min_time = 200
+format = '[$duration](bold yellow)'
