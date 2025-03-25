@@ -14,6 +14,9 @@ brew bundle --file=~/.Brewfile
 # Make ZSH the default shell environment
 chsh -s $(which zsh)
 
+#copy zshrc
+cp .zshrc ~/.zshrc
+
 #setup starship
 mkdir -p ~/.config && cp starship.toml ~/.config/starship.toml
 
