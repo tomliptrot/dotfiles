@@ -1,13 +1,4 @@
-# Taps
-tap "apache-spark" # not actually a tap – correcting below, use the original taps:
-tap "heroku/brew"
-tap "hivemq/mqtt-cli"
-tap "homebrew/autoupdate"
-tap "homebrew/bundle"
-tap "homebrew/cask-versions"
-tap "homebrew/services"
-tap "microsoft/mssql-release"
-tap "mongodb/brew"
+# Description: Brewfile for Homebrew Bundle
 
 # Brews
 # Data Compression and File Utilities

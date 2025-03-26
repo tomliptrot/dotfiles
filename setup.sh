@@ -6,6 +6,9 @@ xcode-select --install
 
 #install homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+#add to path
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/tomliptrot/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"   
 
 # Update Homebrew recipes
 brew update
@@ -30,4 +33,4 @@ cp .gitconfig ~/.gitconfig
 mkdir -p ~/.config/karabiner && cp karabiner.json ~/.config/karabiner/karabiner.json
 
 #copy all files in scripts/ to  ~/.local/bin
-cp scripts/* ~/.local/bin
+mkdir -p ~/.local/bin && cp scripts/* ~/.local/bin
