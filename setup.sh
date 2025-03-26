@@ -1,3 +1,6 @@
+# update mac
+sudo softwareupdate -i -a
+
 #install xcode
 xcode-select --install
 
@@ -25,3 +28,6 @@ cp .gitconfig ~/.gitconfig
 
 #setup karabiner
 mkdir -p ~/.config/karabiner && cp karabiner.json ~/.config/karabiner/karabiner.json
+
+#copy all files in scripts/ to  ~/.local/bin
+cp scripts/* ~/.local/bin

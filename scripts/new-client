@@ -1,0 +1,128 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "google-api-python-client>=2.163.0",
+#     "google-auth-httplib2>=0.2.0",
+#     "google-auth-oauthlib>=1.2.1",
+#     "typer",
+# ]
+# ///
+import os
+import os.path
+import time
+import webbrowser
+
+import typer
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+
+# Google API Credentials file
+SERVICE_ACCOUNT_FILE = "/Users/tomliptrot/gcloud_credentials.json"
+TOKEN_FILE = "/Users/tomliptrot/token.json"
+
+# Google API scopes
+SCOPES = [
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/documents",
+]
+
+# Template and Drive Folder IDs
+TEMPLATE_FILE_ID = "1xBe22LX0wUyF7YdjCSgAIA6HSNvV8bgbwvO3jxbArnk"  # Replace with your Google Docs template file ID
+PARENT_FOLDER_ID = "1fVHscBmYxlQsSaOj2hldOt6JQF2kl1PP"  # Replace with the parent folder where customer folders will be created
+
+# Authenticate and create service clients
+# creds = service_account.Credentials.from_service_account_file(
+#     SERVICE_ACCOUNT_FILE, scopes=SCOPES
+# )
+#
+
+
+def create_folder(folder_name, drive_service):
+    """Creates a new folder in Google Drive"""
+    file_metadata = {
+        "name": folder_name,
+        "mimeType": "application/vnd.google-apps.folder",
+        "parents": [PARENT_FOLDER_ID],
+    }
+    folder = drive_service.files().create(body=file_metadata, fields="id").execute()
+    return folder["id"]
+
+
+def copy_template(folder_id, customer_name, drive_service):
+    """Copies the Google Docs proposal template into the customer folder"""
+    copied_file = {"name": f"Proposal - {customer_name}", "parents": [folder_id]}
+    new_file = (
+        drive_service.files().copy(fileId=TEMPLATE_FILE_ID, body=copied_file).execute()
+    )
+    return new_file["id"]
+
+
+def replace_text_in_document(doc_id, old_text, new_text, docs_service):
+    """Finds and replaces text in a Google Docs document"""
+    requests = [
+        {
+            "replaceAllText": {
+                "containsText": {"text": old_text, "matchCase": True},
+                "replaceText": new_text,
+            }
+        }
+    ]
+    docs_service.documents().batchUpdate(
+        documentId=doc_id, body={"requests": requests}
+    ).execute()
+
+
+def authoirze_google_drive():
+    creds = None
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    if os.path.exists(TOKEN_FILE):
+        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                SERVICE_ACCOUNT_FILE, SCOPES
+            )
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open(TOKEN_FILE, "w") as token:
+            token.write(creds.to_json())
+    return creds
+
+
+def setup_customer_folder(customer_name: str):
+    """Creates a new customer folder, copies the template, and updates it"""
+    creds = authoirze_google_drive()
+    drive_service = build("drive", "v3", credentials=creds)
+    docs_service = build("docs", "v1", credentials=creds)
+    print(f"Setting up folder for {customer_name}...")
+
+    # Create folder
+    folder_id = create_folder(customer_name, drive_service)
+    print(f"Folder created: {folder_id}")
+
+    # Copy template
+    new_doc_id = copy_template(folder_id, customer_name, drive_service)
+    print(f"Template copied: {new_doc_id}")
+
+    # Replace placeholder with customer name
+    time.sleep(2)  # Allow time for Google Docs processing
+    replace_text_in_document(new_doc_id, "__CUSTOMER__", customer_name, docs_service)
+    print(f"Proposal updated for {customer_name}!")
+    # print link to new document
+    new_url = f"https://docs.google.com/document/d/{new_doc_id}"
+    print(f"Proposal URL: {new_url}")
+    webbrowser.open_new_tab(new_url)
+
+    return folder_id, new_doc_id
+
+
+if __name__ == "__main__":
+    typer.run(setup_customer_folder)
