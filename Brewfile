@@ -83,6 +83,7 @@ cask "dbeaver-community"       # Universal database tool and SQL client
 cask "discord"                 # Voice and text chat software
 cask "docker"                  # App to build and share containerised applications and microservices
 cask "firefox"                 # Web browser
+cask "maccy"
 cask "google-chrome"           # Web browser
 cask "google-cloud-sdk"        # Set of tools to manage resources and applications hosted on Google Cloud
 cask "google-drive"            # Client for the Google Drive storage service
