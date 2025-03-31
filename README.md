@@ -1,4 +1,4 @@
-# Toms Dotfiles
+# Tom's Dotfiles
 This is my personal collection of dotfiles and scripts to set up my development environment.
 These files are intended to be used on macOS and are tailored to my preferences. They include configurations for various applications, shell settings, and other customizations.
 
