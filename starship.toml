@@ -2,10 +2,12 @@ format = """
 [┌───────────────────>](bold green)
 [│](bold green)\
 $python\
+$nodejs\
 $directory\
 $git_branch\
 $git_state\
 $git_status\
+$time\
 $cmd_duration
 [└─>](bold green)
 """
@@ -13,6 +15,11 @@ $cmd_duration
 
 add_newline=false
 command_timeout=3000 #ms
+
+[time]
+disabled = false
+format = '[at $time]($style) '
+style = "bold yellow"
 
 [aws]
 disabled = true
@@ -45,3 +52,6 @@ style = "bold #f3e10b"
 [cmd_duration]
 min_time = 200
 format = '[$duration](bold yellow)'
+
+[nodejs]
+format = '[node $version](bold green) '

@@ -33,10 +33,14 @@ for index ({1..9}) alias "$index"="cd +${index}"; unset index
 alias python="uv run python"
 alias python3="uv run python3"
 alias gcam='git commit --all --message'
-alias l='lsd -al --header'
-alias ls='lsd'
 alias glo="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 alias gs='git status'
+alias gp='git push'
+alias gpl='git pull'
+alias gnb='git checkout -b'
+alias l='lsd -al --header'
+alias cat='bat --paging=never'
+alias ls='lsd'
 alias f='fzf --preview "bat --color=always --style=numbers --line-range=:500 {}"'
 
 eval "$(starship init zsh)"

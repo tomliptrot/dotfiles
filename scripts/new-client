@@ -32,6 +32,7 @@ SCOPES = [
 # Template and Drive Folder IDs
 TEMPLATE_FILE_ID = "1xBe22LX0wUyF7YdjCSgAIA6HSNvV8bgbwvO3jxbArnk"  # Replace with your Google Docs template file ID
 PARENT_FOLDER_ID = "1fVHscBmYxlQsSaOj2hldOt6JQF2kl1PP"  # Replace with the parent folder where customer folders will be created
+SHORTCUTS_FOLDER_ID = "1cE49BjHc64rtHnbWk-se7VlNBB21_59U"
 
 # Authenticate and create service clients
 # creds = service_account.Credentials.from_service_account_file(
@@ -75,7 +76,7 @@ def replace_text_in_document(doc_id, old_text, new_text, docs_service):
     ).execute()
 
 
-def authoirze_google_drive():
+def authorize_google_drive():
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -97,9 +98,23 @@ def authoirze_google_drive():
     return creds
 
 
+def create_shortcut(file_id, target_folder_id, name, drive_service):
+    """Creates a shortcut to a file in another folder"""
+    shortcut_metadata = {
+        "name": name,  # You can customise this name
+        "mimeType": "application/vnd.google-apps.shortcut",
+        "parents": [target_folder_id],
+        "shortcutDetails": {"targetId": file_id},
+    }
+    shortcut = (
+        drive_service.files().create(body=shortcut_metadata, fields="id").execute()
+    )
+    return shortcut["id"]
+
+
 def setup_customer_folder(customer_name: str):
     """Creates a new customer folder, copies the template, and updates it"""
-    creds = authoirze_google_drive()
+    creds = authorize_google_drive()
     drive_service = build("drive", "v3", credentials=creds)
     docs_service = build("docs", "v1", credentials=creds)
     print(f"Setting up folder for {customer_name}...")
@@ -109,6 +124,7 @@ def setup_customer_folder(customer_name: str):
     print(f"Folder created: {folder_id}")
 
     # Copy template
+    file_name = f"Proposal - {customer_name}"
     new_doc_id = copy_template(folder_id, customer_name, drive_service)
     print(f"Template copied: {new_doc_id}")
 
@@ -116,12 +132,19 @@ def setup_customer_folder(customer_name: str):
     time.sleep(2)  # Allow time for Google Docs processing
     replace_text_in_document(new_doc_id, "__CUSTOMER__", customer_name, docs_service)
     print(f"Proposal updated for {customer_name}!")
+
+    # Create shortcut to the document in another folder
+    shortcut_id = create_shortcut(
+        new_doc_id, SHORTCUTS_FOLDER_ID, file_name, drive_service
+    )
+    print(f"Shortcut created: {shortcut_id}")
+
     # print link to new document
     new_url = f"https://docs.google.com/document/d/{new_doc_id}"
     print(f"Proposal URL: {new_url}")
     webbrowser.open_new_tab(new_url)
 
-    return folder_id, new_doc_id
+    return folder_id, new_doc_id, shortcut_id
 
 
 if __name__ == "__main__":
