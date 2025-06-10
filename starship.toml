@@ -1,6 +1,7 @@
 format = """
 [┌───────────────────>](bold green)
 [│](bold green)\
+$hostname\
 $python\
 $nodejs\
 $directory\
@@ -55,3 +56,8 @@ format = '[$duration](bold yellow)'
 
 [nodejs]
 format = '[node $version](bold green) '
+
+[hostname]
+ssh_only = false
+format = '[$ssh_symbol](bold blue)[$hostname](bold red) '
+disabled = false
