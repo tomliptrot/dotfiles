@@ -20,6 +20,10 @@ brew bundle --file=~/.Brewfile
 #install all the nerd fonts
 brew search '/font-.*-nerd-font/' | awk '{ print $1 }' | xargs -I{} brew install --cask {} || true
 
+# enable brew autoupdate every 12 hours with upgrades, cleanup, and notifications
+brew tap homebrew/autoupdate
+brew autoupdate start 43200 --upgrade --cleanup --enable-notification || true
+
 # Make ZSH the default shell environment (only if not already)
 if [ "$SHELL" != "$(which zsh)" ]; then
   chsh -s "$(which zsh)"
