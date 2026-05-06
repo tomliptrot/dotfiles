@@ -29,6 +29,7 @@ brew "bat"                     # Cat clone with syntax highlighting and Git inte
 brew "bitwarden-cli"           # Bitwarden password manager CLI
 brew "commitizen"              # Tool to create committing rules for projects
 brew "direnv"                  # Load/unload environment variables based on $PWD
+brew "dockutil"                # Tool for managing dock items
 brew "dvc"                     # Git for data science projects
 brew "eza"                     # Modern, maintained replacement for ls
 brew "ffmpeg"                  # Play, record, convert, and stream audio and video

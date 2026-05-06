@@ -62,3 +62,6 @@ mkdir -p ~/.config/karabiner && cp karabiner.json ~/.config/karabiner/karabiner.
 
 #copy all files in scripts/ to ~/.local/bin
 mkdir -p ~/.local/bin && cp scripts/* ~/.local/bin && chmod +x ~/.local/bin/*
+
+# set up the dock
+~/.local/bin/setup-dock.sh
