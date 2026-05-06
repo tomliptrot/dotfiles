@@ -1,0 +1,59 @@
+#!/usr/bin/env -S uv run --script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "duotone",
+#     "typer",
+# ]
+#
+# [tool.uv.sources]
+# duotone = { git = "https://github.com/carloe/duotone-py" }
+# ///
+import random
+from pathlib import Path
+
+import duotone
+import typer
+from PIL import Image, ImageColor
+
+
+def process_image(
+    file: Path,
+    outfile: Path = Path("output.png"),
+    pixel_folder: Path = Path("pixels/"),
+    big_width: int = 1400,
+):
+    im = Image.open(file)
+    print(f"processing {file.name}")
+    width, height = im.size
+    if height > width / 2:
+        new_height = width / 2
+        height_to_crop = height - new_height
+        left = 0
+        right = width
+        top = height_to_crop / 2
+        bottom = height - (height_to_crop / 2)
+        image_out = im.crop((left, top, right, bottom))
+    else:
+        image_out = im
+    newsize = (int(big_width), int(big_width / 2))
+    image_out = image_out.resize(newsize)
+    light_values = ImageColor.getrgb("#EAE9E5")
+    dark_values = ImageColor.getrgb("#F4592F")
+    image_out = duotone.Duotone.process(image_out, light_values, dark_values)
+    # add random pixels
+    # may be an issue with the pixel size/ image size ratio?
+    for pixel_file in pixel_folder.iterdir():
+        pixel = Image.open(pixel_file)
+        try:
+            random_x = random.randint(0, image_out.size[0])
+        except AttributeError:
+            pass
+        random_y = random.randint(0, image_out.size[1])
+        random_coords = (random_x, random_y)
+        image_out.paste(pixel, random_coords, pixel)
+    image_out.save(outfile)
+    return image_out
+
+
+if __name__ == "__main__":
+    typer.run(process_image)

@@ -7,8 +7,8 @@ xcode-select --install
 #install homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 #add to path
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/tomliptrot/.zprofile
-eval "$(/opt/homebrew/bin/brew shellenv)"   
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Update Homebrew recipes
 brew update
@@ -20,8 +20,10 @@ brew bundle --file=~/.Brewfile
 #install all the nerd fonts
 brew search '/font-.*-nerd-font/' | awk '{ print $1 }' | xargs -I{} brew install --cask {} || true
 
-# Make ZSH the default shell environment
-chsh -s $(which zsh)
+# Make ZSH the default shell environment (only if not already)
+if [ "$SHELL" != "$(which zsh)" ]; then
+  chsh -s "$(which zsh)"
+fi
 
 #copy zshrc
 cp .zshrc ~/.zshrc
@@ -39,14 +41,11 @@ mkdir -p ~/.config && cp starship.toml ~/.config/starship.toml
 cp .gitconfig ~/.gitconfig
 
 # copy iterm profile
-cp iterm-profile.json "~/Library/Application Support/iTerm2/DynamicProfiles/iterm-profile.json"
+mkdir -p "$HOME/Library/Application Support/iTerm2/DynamicProfiles"
+cp iterm-profile.json "$HOME/Library/Application Support/iTerm2/DynamicProfiles/iterm-profile.json"
 
 #setup karabiner
 mkdir -p ~/.config/karabiner && cp karabiner.json ~/.config/karabiner/karabiner.json
 
-#copy all files in scripts/ to  ~/.local/bin
-mkdir -p ~/.local/bin && cp scripts/* ~/.local/bin
-
-mkdir ~/customers
-mkdir ~/customers/marks_and_clerk
-git clone git@github.com:tomliptrot/marks-and-clerk.git ~/customers/marks_and_clerk
+#copy all files in scripts/ to ~/.local/bin
+mkdir -p ~/.local/bin && cp scripts/* ~/.local/bin && chmod +x ~/.local/bin/*
