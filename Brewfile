@@ -90,7 +90,6 @@ brew "ruby"                    # Powerful, clean, object-oriented scripting lang
 
 
 # Casks - Applications
-cask "adobe-acrobat-reader"    # PDF reader
 cask "alfred"                  # Application launcher and productivity software
 cask "android-studio"          # Tools for building Android applications
 cask "bbedit"                  # Text editor
